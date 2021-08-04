@@ -1,13 +1,5 @@
 <template>
   <div>
-    <div id="slogan" class="text-center">
-      <h1>NameGator</h1>
-      <br />
-      <h6 class="text-secondary">
-        Name Generator with Vue.js, GraphQL and Node
-      </h6>
-    </div>
-
     <div id="main">
       <div class="container">
         <div class="row">
@@ -66,7 +58,7 @@
 <script>
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.css";
-import AppItemList from "./components/AppItemList.vue";
+import AppItemList from "./AppItemList.vue";
 
 export default {
   name: "App",
@@ -111,12 +103,4 @@ export default {
 };
 </script>
 
-<style>
-#slogan {
-  margin: 30px 0;
-}
-#main {
-  background-color: #f1f1f1;
-  padding: 30px 0;
-}
-</style>
+<style></style>
