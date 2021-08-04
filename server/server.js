@@ -6,6 +6,11 @@ const typeDefs = `
     description: String
   }
 
+  type Domain {
+    name: String,
+    checkout: String
+  }
+
   type Query {
     items (type: String): [Item]
   }
@@ -18,6 +23,7 @@ const typeDefs = `
   type Mutation {
     saveItem(item: ItemInput): Item
     deleteItem(id: Int): Boolean
+    generateDomains: [Domain]
   }
 `;
 
@@ -49,6 +55,18 @@ const resolvers = {
       if (!item) return false;
       items.splice(items.indexOf(item), 1);
       return true;
+    },
+    generateDomains() {
+      const domains = [];
+      for (const prefix of items.filter((item) => item.type === "prefix")) {
+        for (const suffix of items.filter((item) => item.type === "suffix")) {
+          const name = prefix.description + suffix.description;
+          const url = name.toLowerCase();
+          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.site`;
+          domains.push({ name, checkout });
+        }
+      }
+      return domains;
     },
   },
 };

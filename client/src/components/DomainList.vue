@@ -143,15 +143,23 @@ export default {
       });
     },
     generateDomains() {
-      this.domains = [];
-      for (const prefix of this.items.prefix) {
-        for (const suffix of this.items.suffix) {
-          const name = prefix.description + suffix.description;
-          const url = name.toLowerCase();
-          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.site`;
-          this.domains.push({ name, checkout });
-        }
-      }
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+            mutation {
+              domains: generateDomains {
+                name
+                checkout
+              }
+            }
+          `,
+        },
+      }).then((response) => {
+        const query = response.data;
+        this.domains = query.data.domains;
+      });
     },
   },
 
