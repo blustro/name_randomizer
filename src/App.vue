@@ -114,9 +114,22 @@
               <li
                 class="list-group-item"
                 v-for="domain in domains"
-                :key="domain"
+                :key="domain.name"
               >
-                {{ domain }}
+                <div class="row">
+                  <div class="col-md">
+                    {{ domain.name }}
+                  </div>
+                  <div class="col-md text-end">
+                    <a
+                      class="btn btn-info"
+                      :href="domain.checkout"
+                      target="blank"
+                    >
+                      <span class="fa fa-shopping-cart"></span>
+                    </a>
+                  </div>
+                </div>
               </li>
             </ul>
           </div>
@@ -138,46 +151,37 @@ export default {
       suffix: "",
       prefixes: ["Air", "Jet", "Flight"],
       suffixes: ["Hub", "Station", "Mart"],
-      domains: [
-        "AirHub",
-        "AirStation",
-        "AirMart",
-        "JetHub",
-        "JetStation",
-        "JetMart",
-        "FlightHub",
-        "FlightStation",
-        "FlightMart",
-      ],
     };
   },
   methods: {
     addPrefix(prefix) {
       this.prefixes.push(prefix);
       this.prefix = "";
-      this.generate();
     },
     deletePrefix(prefix) {
       this.prefixes.splice(this.prefixes.indexOf(prefix), 1);
-      this.generate();
     },
     addSuffix(suffix) {
       this.suffixes.push(suffix);
       this.suffix = "";
-      this.generate();
     },
     deleteSuffix(suffix) {
       this.suffixes.splice(this.suffixes.indexOf(suffix), 1);
-      this.generate();
     },
-
-    generate() {
-      this.domains = [];
+  },
+  computed: {
+    domains() {
+      console.log("generating domains...");
+      const domains = [];
       for (const prefix of this.prefixes) {
         for (const suffix of this.suffixes) {
-          this.domains.push(prefix + suffix);
+          const name = prefix + suffix;
+          const url = name.toLowerCase();
+          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.site`;
+          domains.push({ name, checkout });
         }
       }
+      return domains;
     },
   },
 };
