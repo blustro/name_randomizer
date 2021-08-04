@@ -17,6 +17,24 @@ const store = new Vuex.Store({
     },
     domains: [],
   },
+  mutations: {
+    addItem(state, payload) {
+      const { item, newItem } = payload;
+      state.items[item.type].push(newItem);
+    },
+    deleteItem(state, payload) {
+      const { item } = payload;
+      state.items[item.type].splice(state.items[item.type].indexOf(item), 1);
+    },
+    setItems(state, payload) {
+      const { items, type } = payload;
+      state.items[type] = items;
+    },
+    setDomains(state, payload) {
+      const { domains } = payload;
+      state.domains = domains;
+    },
+  },
   actions: {
     async addItem(context, payload) {
       const item = payload;
@@ -38,7 +56,7 @@ const store = new Vuex.Store({
       }).then((response) => {
         const query = response.data;
         const newItem = query.data.newItem;
-        context.state.items[item.type].push(newItem);
+        context.commit("addItem", { item, newItem });
         context.dispatch("generateDomains");
       });
     },
@@ -49,19 +67,16 @@ const store = new Vuex.Store({
         method: "post",
         data: {
           query: `
-          mutation ($id: Int) {
-            deleted: deleteItem(id: $id)
-          }
+            mutation ($id: Int) {
+              deleted: deleteItem(id: $id)
+            }
         `,
           variables: {
             id: item.id,
           },
         },
       }).then(() => {
-        context.state.items[item.type].splice(
-          context.state.items[item.type].indexOf(item),
-          1
-        );
+        context.commit("deleteItem", { item });
         context.dispatch("generateDomains");
       });
     },
@@ -86,7 +101,7 @@ const store = new Vuex.Store({
         },
       }).then((response) => {
         const query = response.data;
-        context.state.items[type] = query.data.items;
+        context.commit("setItems", { type, items: query.data.items });
       });
     },
     async generateDomains(context) {
@@ -106,7 +121,7 @@ const store = new Vuex.Store({
         },
       }).then((response) => {
         const query = response.data;
-        context.state.domains = query.data.domains;
+        context.commit("setDomains", { domains: query.data.domains });
       });
     },
   },
