@@ -9,7 +9,7 @@
               type="prefix"
               :items="items.prefix"
               @addItem="addItem"
-              @deleteItem="deletePrefix"
+              @deleteItem="deleteItem"
             ></AppItemList>
           </div>
           <div class="col-md">
@@ -18,7 +18,7 @@
               type="suffix"
               :items="items.suffix"
               @addItem="addItem"
-              @deleteItem="deleteSuffix"
+              @deleteItem="deleteItem"
             ></AppItemList>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default {
         this.items[item.type].push(newItem);
       });
     },
-    deletePrefix(prefix) {
+    deleteItem(item) {
       axios({
         url: "http://localhost:4000",
         method: "post",
@@ -108,19 +108,14 @@ export default {
             }
           `,
           variables: {
-            id: prefix.id,
+            id: item.id,
           },
         },
       }).then(() => {
-        this.getItems("prefix");
+        this.getItems(item.type);
       });
     },
-    addSuffix(suffix) {
-      this.suffixes.push(suffix);
-    },
-    deleteSuffix(suffix) {
-      this.suffixes.splice(this.suffixes.indexOf(suffix), 1);
-    },
+
     getItems(type) {
       axios({
         url: "http://localhost:4000",

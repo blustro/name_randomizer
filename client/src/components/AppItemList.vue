@@ -52,8 +52,8 @@ export default {
       this.$emit("addItem", { type, description });
       this.description = "";
     },
-    deleteItem(type, description) {
-      this.$emit("deleteItem", { type, description });
+    deleteItem(item) {
+      this.$emit("deleteItem", item);
       this.description = "";
     },
   },
