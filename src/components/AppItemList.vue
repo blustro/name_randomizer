@@ -1,0 +1,63 @@
+<template>
+  <div>
+    <h5>
+      {{ title }}
+      <span class="badge bg-secondary">{{ items.length }}</span>
+    </h5>
+    <div class="card">
+      <div class="card-body">
+        <ul class="list-group">
+          <li class="list-group-item" v-for="item in items" :key="item">
+            <div class="row">
+              <div class="col-md">
+                {{ item }}
+              </div>
+              <div class="col-md text-end">
+                <button class="btn btn-info" @click="deleteItem(item)">
+                  <span class="fa fa-trash"></span>
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <br />
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Type the item"
+            v-model="item"
+            @keyup.enter="addItem(item)"
+          />
+          <div class="input-group-text bg-info p-0">
+            <button class="btn" @click="addItem(item)">
+              <span class="fa fa-plus"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "AppItemList",
+  props: ["title", "items"],
+  data() {
+    return { item: "" };
+  },
+  methods: {
+    addItem(item) {
+      this.$emit("addItem", item);
+      this.item = "";
+    },
+    deleteItem(item) {
+      this.$emit("deleteItem", item);
+      this.item = "";
+    },
+  },
+};
+</script>
+
+<style scoped></style>
