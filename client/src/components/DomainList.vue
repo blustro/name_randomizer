@@ -55,6 +55,13 @@
                     >
                       <span class="fa fa-shopping-cart"></span>
                     </a>
+
+                    <button
+                      class="btn btn-info ms-3"
+                      @click="openDomain(domain)"
+                    >
+                      <span class="fa fa-search"></span>
+                    </button>
                   </div>
                 </div>
               </li>
@@ -127,7 +134,6 @@ export default {
         this.generateDomains();
       });
     },
-
     getItems(type) {
       return axios({
         url: "http://localhost:4000",
@@ -170,6 +176,9 @@ export default {
         const query = response.data;
         this.domains = query.data.domains;
       });
+    },
+    openDomain(domain) {
+      this.$router.push({ path: `/domains/${domain.name}` });
     },
   },
 
