@@ -72,16 +72,90 @@ export default {
   },
   methods: {
     addPrefix(prefix) {
-      this.prefixes.push(prefix);
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+            mutation ($item: ItemInput) {
+              newPrefix: saveItem(item: $item) {
+                id
+                type
+                description
+              }
+            }
+        `,
+          variables: {
+            item: { type: "prefix", description: prefix },
+          },
+        },
+      }).then((response) => {
+        const query = response.data;
+        const newPrefix = query.data.newPrefix;
+        this.prefixes.push(newPrefix);
+      });
     },
     deletePrefix(prefix) {
-      this.prefixes.splice(this.prefixes.indexOf(prefix), 1);
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+            mutation ($id: Int) {
+              deleted: deleteItem(id: $id) 
+            }
+          `,
+          variables: {
+            id: prefix.id,
+          },
+        },
+      }).then(() => {
+        this.getPrefixes();
+      });
     },
     addSuffix(suffix) {
       this.suffixes.push(suffix);
     },
     deleteSuffix(suffix) {
       this.suffixes.splice(this.suffixes.indexOf(suffix), 1);
+    },
+    getPrefixes() {
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+          {
+            prefixes: items (type: "prefix") {
+              id
+              type
+              description
+            }
+          }
+        `,
+        },
+      }).then((response) => {
+        const query = response.data;
+        this.prefixes = query.data.prefixes;
+      });
+    },
+    getSuffixes() {
+      axios({
+        url: "http://localhost:4000",
+        method: "post",
+        data: {
+          query: `
+          {
+            suffixes: items (type: "suffix") {
+              description
+            }
+          }
+        `,
+        },
+      }).then((response) => {
+        const query = response.data;
+        this.suffixes = query.data.suffixes;
+      });
     },
   },
   computed: {
@@ -90,7 +164,7 @@ export default {
       const domains = [];
       for (const prefix of this.prefixes) {
         for (const suffix of this.suffixes) {
-          const name = prefix + suffix;
+          const name = prefix.description + suffix.description;
           const url = name.toLowerCase();
           const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.site`;
           domains.push({ name, checkout });
@@ -101,29 +175,8 @@ export default {
   },
 
   created() {
-    axios({
-      url: "http://localhost:4000",
-      method: "post",
-      data: {
-        query: `
-          {
-            prefixes: items (type: "prefix") {
-              id
-              type
-              description
-            }
-            suffixes: items (type: "suffix") {
-              description
-            }
-            
-          }
-        `,
-      },
-    }).then((response) => {
-      const query = response.data;
-      this.prefixes = query.data.prefixes.map((prefix) => prefix.description);
-      this.suffixes = query.data.suffixes.map((suffix) => suffix.description);
-    });
+    this.getPrefixes();
+    this.getSuffixes();
   },
 };
 </script>
