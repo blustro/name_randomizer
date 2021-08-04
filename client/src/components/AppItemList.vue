@@ -26,11 +26,11 @@
             type="text"
             class="form-control"
             placeholder="Type the item"
-            v-model="item"
-            @keyup.enter="addItem(item)"
+            v-model="description"
+            @keyup.enter="addItem(type, description)"
           />
           <div class="input-group-text bg-info p-0">
-            <button class="btn" @click="addItem(item)">
+            <button class="btn" @click="addItem(type, description)">
               <span class="fa fa-plus"></span>
             </button>
           </div>
@@ -43,21 +43,19 @@
 <script>
 export default {
   name: "AppItemList",
-  props: ["title", "items"],
+  props: ["title", "type", "items"],
   data() {
-    return { item: "" };
+    return { description: "" };
   },
   methods: {
-    addItem(item) {
-      this.$emit("addItem", item);
-      this.item = "";
+    addItem(type, description) {
+      this.$emit("addItem", { type, description });
+      this.description = "";
     },
-    deleteItem(item) {
-      this.$emit("deleteItem", item);
-      this.item = "";
+    deleteItem(type, description) {
+      this.$emit("deleteItem", { type, description });
+      this.description = "";
     },
   },
 };
 </script>
-
-<style scoped></style>
