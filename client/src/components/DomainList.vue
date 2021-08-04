@@ -69,6 +69,7 @@ export default {
         prefix: [],
         suffix: [],
       },
+      domains: [],
     };
   },
   components: {
@@ -95,6 +96,7 @@ export default {
         const query = response.data;
         const newItem = query.data.newItem;
         this.items[item.type].push(newItem);
+        this.generateDomains();
       });
     },
     deleteItem(item) {
@@ -104,7 +106,7 @@ export default {
         data: {
           query: `
             mutation ($id: Int) {
-              deleted: deleteItem(id: $id) 
+              deleted: deleteItem(id: $id)
             }
           `,
           variables: {
@@ -112,12 +114,13 @@ export default {
           },
         },
       }).then(() => {
-        this.getItems(item.type);
+        this.items[item.type].splice(this.items[item.type].indexOf(item), 1);
+        this.generateDomains();
       });
     },
 
     getItems(type) {
-      axios({
+      return axios({
         url: "http://localhost:4000",
         method: "post",
         data: {
@@ -139,26 +142,23 @@ export default {
         this.items[type] = query.data.items;
       });
     },
-  },
-  computed: {
-    domains() {
-      console.log("generating domains...");
-      const domains = [];
+    generateDomains() {
+      this.domains = [];
       for (const prefix of this.items.prefix) {
         for (const suffix of this.items.suffix) {
           const name = prefix.description + suffix.description;
           const url = name.toLowerCase();
           const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.site`;
-          domains.push({ name, checkout });
+          this.domains.push({ name, checkout });
         }
       }
-      return domains;
     },
   },
 
   created() {
-    this.getItems("prefix");
-    this.getItems("suffix");
+    Promise.all([this.getItems("prefix"), this.getItems("suffix")]).then(() => {
+      this.generateDomains();
+    });
   },
 };
 </script>
