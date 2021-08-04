@@ -1,4 +1,6 @@
 const { ApolloServer } = require("apollo-server");
+const dns = require("dns");
+
 const typeDefs = `
   type Item {
     id: Int
@@ -9,6 +11,7 @@ const typeDefs = `
   type Domain {
     name: String,
     checkout: String
+    available: Boolean
   }
 
   type Query {
@@ -36,6 +39,15 @@ const items = [
   { id: 6, type: "suffix", description: "Mart" },
 ];
 
+const isDomainAvailable = function (url) {
+  return new Promise(function (resolve, reject) {
+    dns.resolve(url, function (error) {
+      if (error) resolve(true);
+      else resolve(false);
+    });
+  });
+};
+
 const resolvers = {
   Query: {
     items(_, args) {
@@ -56,14 +68,15 @@ const resolvers = {
       items.splice(items.indexOf(item), 1);
       return true;
     },
-    generateDomains() {
+    async generateDomains() {
       const domains = [];
       for (const prefix of items.filter((item) => item.type === "prefix")) {
         for (const suffix of items.filter((item) => item.type === "suffix")) {
           const name = prefix.description + suffix.description;
           const url = name.toLowerCase();
-          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.site`;
-          domains.push({ name, checkout });
+          const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com`;
+          const available = await isDomainAvailable(`${url}.com`);
+          domains.push({ name, checkout, available });
         }
       }
       return domains;

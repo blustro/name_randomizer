@@ -35,10 +35,19 @@
                 :key="domain.name"
               >
                 <div class="row">
-                  <div class="col-md">
+                  <div class="col-md-6">
                     {{ domain.name }}
                   </div>
-                  <div class="col-md text-end">
+                  <div class="col-md-3">
+                    <span
+                      class="badge"
+                      :class="[domain.available ? 'bg-success' : 'bg-danger']"
+                      >{{
+                        domain.available ? "Available" : "Unavailable"
+                      }}</span
+                    >
+                  </div>
+                  <div class="col-md-3 text-end">
                     <a
                       class="btn btn-info"
                       :href="domain.checkout"
@@ -152,6 +161,7 @@ export default {
               domains: generateDomains {
                 name
                 checkout
+                available
               }
             }
           `,
